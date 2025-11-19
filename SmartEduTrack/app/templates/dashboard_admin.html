@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Admin Dashboard</h3>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card shadow-sm h-100"><div class="card-body">
+      <h5 class="card-title">Add Student</h5>
+      <form method="POST" action="/admin/add-student">
+        {{ add_student_form.hidden_tag() }}
+        {{ add_student_form.name(class_='form-control mb-2', placeholder='Name') }}
+        {{ add_student_form.email(class_='form-control mb-2', placeholder='Email') }}
+        {{ add_student_form.contact(class_='form-control mb-2', placeholder='Contact') }}
+        {{ add_student_form.parent_name(class_='form-control mb-2', placeholder='Parent Name') }}
+        {{ add_student_form.parent_email(class_='form-control mb-2', placeholder='Parent Email') }}
+        {{ add_student_form.parent_contact(class_='form-control mb-2', placeholder='Parent Contact') }}
+        {{ add_student_form.class_name(class_='form-control mb-2', placeholder='Class (e.g., CSE)') }}
+        {{ add_student_form.division(class_='form-select mb-2') }}
+        {{ add_student_form.password(class_='form-control mb-2', placeholder='Password') }}
+        {{ add_student_form.submit(class_='btn btn-primary w-100') }}
+      </form>
+    </div></div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card shadow-sm h-100"><div class="card-body">
+      <h5 class="card-title">Add Teacher</h5>
+      <form method="POST" action="/admin/add-teacher">
+        {{ add_teacher_form.hidden_tag() }}
+        {{ add_teacher_form.name(class_='form-control mb-2', placeholder='Name') }}
+        {{ add_teacher_form.email(class_='form-control mb-2', placeholder='Email') }}
+        {{ add_teacher_form.contact(class_='form-control mb-2', placeholder='Contact') }}
+        {{ add_teacher_form.subject(class_='form-control mb-2', placeholder='Subject') }}
+        {{ add_teacher_form.division(class_='form-select mb-2') }}
+        {{ add_teacher_form.password(class_='form-control mb-2', placeholder='Password') }}
+        {{ add_teacher_form.submit(class_='btn btn-primary w-100') }}
+      </form>
+    </div></div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card shadow-sm h-100"><div class="card-body">
+      <h5 class="card-title">Add Parent</h5>
+      <form method="POST" action="/admin/add-parent">
+        {{ add_parent_form.hidden_tag() }}
+        {{ add_parent_form.name(class_='form-control mb-2', placeholder='Name') }}
+        {{ add_parent_form.email(class_='form-control mb-2', placeholder='Email') }}
+        {{ add_parent_form.contact(class_='form-control mb-2', placeholder='Contact') }}
+        {{ add_parent_form.student_id(class_='form-control mb-2', placeholder='Student ID') }}
+        {{ add_parent_form.password(class_='form-control mb-2', placeholder='Password') }}
+        {{ add_parent_form.submit(class_='btn btn-primary w-100') }}
+      </form>
+    </div></div>
+  </div>
+</div>
+
+<hr/>
+
+<div class="row g-4">
+  <div class="col-md-6">
+    <h5>Students</h5>
+    <table class="table table-striped table-hover">
+      <thead><tr><th>Roll</th><th>Name</th><th>Class</th><th>Division</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for s in students %}
+          <tr>
+            <td>{{ s.roll_no }}</td>
+            <td><a href="#" class="user-link" data-type="student" data-id="{{ s.id }}" data-name="{{ s.name }}" data-email="{{ s.email }}" data-contact="{{ s.contact }}" data-parent-name="{{ s.parent_name }}" data-parent-email="{{ s.parent_email }}" data-parent-contact="{{ s.parent_contact }}">{{ s.name }}</a></td>
+            <td>{{ s.class_name }}</td>
+            <td>{{ s.division }}</td>
+            <td>
+              <button class="btn btn-sm btn-warning edit-user-btn" data-type="student" data-id="{{ s.id }}">Edit</button>
+              <button class="btn btn-sm btn-danger remove-user-btn" data-type="student" data-id="{{ s.id }}">Remove</button>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-6">
+    <h5>Teachers</h5>
+    <table class="table table-striped table-hover">
+      <thead><tr><th>Name</th><th>Subject</th><th>Division</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for t in teachers %}
+          <tr>
+            <td><a href="#" class="user-link" data-type="teacher" data-id="{{ t.id }}" data-name="{{ t.name }}" data-email="{{ t.email }}" data-contact="{{ t.contact }}" data-subject="{{ t.subject }}">{{ t.name }}</a></td>
+            <td>{{ t.subject }}</td>
+            <td>{{ t.division }}</td>
+            <td>
+              <button class="btn btn-sm btn-warning edit-user-btn" data-type="teacher" data-id="{{ t.id }}">Edit</button>
+              <button class="btn btn-sm btn-danger remove-user-btn" data-type="teacher" data-id="{{ t.id }}">Remove</button>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="mt-3">
+  <h5>Parents</h5>
+  <table class="table table-striped table-hover">
+    <thead><tr><th>Name</th><th>Email</th><th>Student</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for p in parents %}
+        <tr>
+          <td><a href="#" class="user-link" data-type="parent" data-id="{{ p.id }}" data-name="{{ p.name }}" data-email="{{ p.email }}" data-contact="{{ p.contact }}" data-student="{{ p.student.name }}">{{ p.name }}</a></td>
+          <td>{{ p.email }}</td>
+          <td>{{ p.student.name }}</td>
+          <td>
+            <button class="btn btn-sm btn-warning edit-user-btn" data-type="parent" data-id="{{ p.id }}">Edit</button>
+            <button class="btn btn-sm btn-danger remove-user-btn" data-type="parent" data-id="{{ p.id }}">Remove</button>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- User Info Modal -->
+<div class="modal fade" id="userInfoModal" tabindex="-1" aria-labelledby="userInfoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="userInfoModalLabel">User Info</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="userInfoModalBody">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Show user info modal
+  document.querySelectorAll('.user-link').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      let type = this.dataset.type;
+      let html = '<ul class="list-group">';
+      html += '<li class="list-group-item"><b>Name:</b> ' + (this.dataset.name || '-') + '</li>';
+      html += '<li class="list-group-item"><b>Email:</b> ' + (this.dataset.email || '-') + '</li>';
+      html += '<li class="list-group-item"><b>Contact:</b> ' + (this.dataset.contact || '-') + '</li>';
+      if(type === 'student') {
+        html += '<li class="list-group-item"><b>Parent Name:</b> ' + (this.dataset.parentName || '-') + '</li>';
+        html += '<li class="list-group-item"><b>Parent Email:</b> ' + (this.dataset.parentEmail || '-') + '</li>';
+        html += '<li class="list-group-item"><b>Parent Contact:</b> ' + (this.dataset.parentContact || '-') + '</li>';
+      }
+      if(type === 'teacher') {
+        html += '<li class="list-group-item"><b>Subject:</b> ' + (this.dataset.subject || '-') + '</li>';
+      }
+      if(type === 'parent') {
+        html += '<li class="list-group-item"><b>Student:</b> ' + (this.dataset.student || '-') + '</li>';
+      }
+      html += '</ul>';
+      document.getElementById('userInfoModalBody').innerHTML = html;
+      var modal = new bootstrap.Modal(document.getElementById('userInfoModal'));
+      modal.show();
+    });
+  });
+
+  // Remove user (AJAX)
+  document.querySelectorAll('.remove-user-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      if(confirm('Are you sure you want to remove this user?')) {
+        fetch('/admin/remove-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'type=' + encodeURIComponent(this.dataset.type) + '&id=' + encodeURIComponent(this.dataset.id)
+        })
+        .then(r => r.json())
+        .then(data => {
+          if(data.success) {
+            location.reload();
+          } else {
+            alert('Error: ' + (data.error || 'Failed to remove user.'));
+          }
+        });
+      }
+    });
+  });
+
+  // Edit user (AJAX, prompt for new name/email/contact/password)
+  document.querySelectorAll('.edit-user-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      let type = this.dataset.type;
+      let id = this.dataset.id;
+      let name = prompt('Enter new name (leave blank to keep current):');
+      let email = prompt('Enter new email (leave blank to keep current):');
+      let contact = prompt('Enter new contact (leave blank to keep current):');
+      let password = prompt('Enter new password (leave blank to keep current):');
+      fetch('/admin/edit-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'type=' + encodeURIComponent(type) + '&id=' + encodeURIComponent(id) + '&name=' + encodeURIComponent(name || '') + '&email=' + encodeURIComponent(email || '') + '&contact=' + encodeURIComponent(contact || '') + '&password=' + encodeURIComponent(password || '')
+      })
+      .then(r => r.json())
+      .then(data => {
+        if(data.success) {
+          location.reload();
+        } else {
+          alert('Error: ' + (data.error || 'Failed to edit user.'));
+        }
+      });
+    });
+  });
+});
+</script>
+{% endblock %}
+
+

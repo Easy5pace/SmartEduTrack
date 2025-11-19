@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Teacher Dashboard</h3>
+  <span class="text-muted">Manage class data and insights</span>
+</div>
+
+<div class="row">
+  <div class="col-md-4">
+    <div class="card shadow-sm h-100"><div class="card-body">
+    <h5 class="card-title">Upload Mark</h5>
+    <form method="POST">
+      {{ mark_form.hidden_tag() }}
+      <label class="form-label">Student</label>
+      <select name="student_id" class="form-select mb-2">
+        {% for s in students_in_div %}
+          <option value="{{ s.id }}">{{ s.roll_no }} - {{ s.name }} ({{ s.division }})</option>
+        {% endfor %}
+      </select>
+      {{ mark_form.subject.label }} {{ mark_form.subject(class_='form-control mb-2') }}
+      {{ mark_form.exam.label }} {{ mark_form.exam(class_='form-control mb-2') }}
+      {{ mark_form.score.label }} {{ mark_form.score(class_='form-control mb-2') }}
+      {{ mark_form.max_score.label }} {{ mark_form.max_score(class_='form-control mb-2') }}
+      {{ mark_form.submit(class_='btn btn-primary') }}
+    </form>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm h-100"><div class="card-body">
+    <h5 class="card-title">Upload Attendance</h5>
+    <form method="POST">
+      {{ attendance_form.hidden_tag() }}
+      <label class="form-label">Student</label>
+      <select name="student_id" class="form-select mb-2">
+        {% for s in students_in_div %}
+          <option value="{{ s.id }}">{{ s.roll_no }} - {{ s.name }} ({{ s.division }})</option>
+        {% endfor %}
+      </select>
+      {{ attendance_form.date.label }} {{ attendance_form.date(class_='form-control mb-2') }}
+      {{ attendance_form.status.label }} {{ attendance_form.status(class_='form-select mb-2') }}
+      {{ attendance_form.submit(class_='btn btn-primary') }}
+    </form>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm h-100"><div class="card-body">
+    <h5 class="card-title">Upload Assignment</h5>
+    <form method="POST">
+      {{ assignment_form.hidden_tag() }}
+      {{ assignment_form.title.label }} {{ assignment_form.title(class_='form-control mb-2') }}
+      {{ assignment_form.description.label }} {{ assignment_form.description(class_='form-control mb-2') }}
+      {{ assignment_form.due_date.label }} {{ assignment_form.due_date(class_='form-control mb-2') }}
+      <div class="form-check mb-2">{{ assignment_form.submitted(class_='form-check-input') }} {{ assignment_form.submitted.label(class_='form-check-label') }}</div>
+      {{ assignment_form.max_score.label }} {{ assignment_form.max_score(class_='form-control mb-2') }}
+      {{ assignment_form.submit(class_='btn btn-primary') }}
+    </form>
+    </div></div>
+  </div>
+</div>
+
+
+<div class="row mt-4">
+  <div class="col-md-6">
+    <h5>Class Performance (Average by Subject)</h5>
+    <div id="avgSubjectChart" class="card card-body shadow-sm" style="height:350px;"></div>
+  </div>
+  <div class="col-md-6">
+    <h5>Attendance Overview</h5>
+    <div id="attendanceChart" class="card card-body shadow-sm" style="height:350px;"></div>
+  </div>
+</div>
+<script type="text/javascript">
+  // Class Performance Chart
+  var avgBySubject = {{ avg_by_subject | tojson | safe }};
+  var perfData = [{ x: Object.keys(avgBySubject), y: Object.values(avgBySubject), type: 'bar', marker: {color: '#4e79a7'} }];
+  Plotly.newPlot('avgSubjectChart', perfData, { yaxis: { title: 'Average (%)' }, margin: { t: 30, l: 40, r: 10, b: 40 }, height: 320 });
+
+  // Attendance Chart
+  var attendanceChart = {{ attendance_chart | tojson | safe }};
+  var dates = Object.keys(attendanceChart);
+  var present = dates.map(function(d) { return attendanceChart[d]['Present'] || 0; });
+  var absent = dates.map(function(d) { return attendanceChart[d]['Absent'] || 0; });
+  var attData = [
+    { x: dates, y: present, name: 'Present', type: 'bar', marker: {color: '#59a14f'} },
+    { x: dates, y: absent, name: 'Absent', type: 'bar', marker: {color: '#e15759'} }
+  ];
+  Plotly.newPlot('attendanceChart', attData, { barmode: 'group', yaxis: { title: 'Count' }, margin: { t: 30, l: 40, r: 10, b: 40 }, height: 320 });
+</script>
+
+<hr/>
+<h5 class="mt-3">Weak Students (Avg < 40%)</h5>
+<table class="table table-sm table-striped table-hover">
+  <thead><tr><th>ID</th><th>Name</th><th>Avg %</th></tr></thead>
+  <tbody>
+    {% for s in weak_students %}
+      <tr><td>{{ s.id }}</td><td>{{ s.name }}</td><td>{{ s.avg }}</td></tr>
+    {% endfor %}
+    {% if weak_students|length == 0 %}
+      <tr><td colspan="3">None</td></tr>
+    {% endif %}
+  </tbody>
+</table>
+
+<hr/>
+<h5 class="mt-3">Assignments Assigned by You</h5>
+<table class="table table-sm table-bordered table-hover">
+  <thead><tr><th>Student</th><th>Title</th><th>Due Date</th><th>Submitted</th><th>Score</th><th>Action</th></tr></thead>
+  <tbody>
+    {% for a in assignments %}
+      <tr>
+        <td>{{ a.student.name }}</td>
+        <td>{{ a.title }}</td>
+        <td>{{ a.due_date or '-' }}</td>
+        <td>{% if a.submitted %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}</td>
+        <td>{% if a.score is not none %}{{ a.score }}{% else %}-{% endif %}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#editAssignment{{ a.id }}" aria-expanded="false" aria-controls="editAssignment{{ a.id }}">Edit</button>
+        </td>
+      </tr>
+      <tr class="collapse" id="editAssignment{{ a.id }}">
+        <td colspan="6">
+          <form method="POST" action="{{ url_for('main.update_assignment', assignment_id=a.id) }}" class="row g-2 align-items-center">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input type="hidden" name="student_id" value="{{ a.student.id }}"/>
+            <div class="col-12 mb-2">
+              <strong>Assignment:</strong> {{ a.title }} &nbsp;&nbsp; <strong>Student:</strong> {{ a.student.name }}
+            </div>
+            <div class="col-auto">
+              <label class="form-label mb-0">Submitted:</label>
+              <select name="submitted" class="form-select form-select-sm">
+                <option value="True" {% if a.submitted %}selected{% endif %}>Yes</option>
+                <option value="False" {% if not a.submitted %}selected{% endif %}>No</option>
+              </select>
+            </div>
+            <div class="col-auto">
+              <label class="form-label mb-0">Grade:</label>
+              <input type="number" step="0.01" name="score" class="form-control form-control-sm" value="{{ a.score if a.score is not none else '' }}" min="0" max="{{ a.max_score }}">
+            </div>
+            <div class="col-auto">
+              <button type="submit" class="btn btn-sm btn-success">Save</button>
+            </div>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    {% if assignments|length == 0 %}
+      <tr><td colspan="6">No assignments found.</td></tr>
+    {% endif %}
+  </tbody>
+</table>
+{% endblock %}
+
+

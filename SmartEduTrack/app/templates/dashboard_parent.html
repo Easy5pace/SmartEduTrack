@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <h3 class="mb-0">Parent Dashboard</h3>
+  <span class="badge bg-secondary">{{ parent.name }}</span>
+ </div>
+ <div class="text-muted mb-3">Student: <strong>{{ student.name }}</strong> ({{ student.class_name }})</div>
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100"><div class="card-body">
+      <h5 class="card-title">Marks</h5>
+      <canvas id="marksChart"></canvas>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100"><div class="card-body">
+      <h5 class="card-title">Attendance</h5>
+      <canvas id="attendanceChart"></canvas>
+    </div></div>
+  </div>
+</div>
+
+<script>
+  const marks = {{ marks_data | tojson }};
+  const subjects = marks.map(m => m.subject);
+  const scores = marks.map(m => m.score);
+  const maxes = marks.map(m => m.max);
+  new Chart(document.getElementById('marksChart'), {
+    type: 'line',
+    data: { labels: subjects, datasets: [ { label: 'Score', data: scores }, { label: 'Max', data: maxes } ] },
+  });
+
+  const attendance = {{ attendance_data | tojson }};
+  const present = attendance.filter(a => a.status === 'Present').length;
+  const absent = attendance.filter(a => a.status === 'Absent').length;
+  new Chart(document.getElementById('attendanceChart'), {
+    type: 'pie',
+    data: { labels: ['Present', 'Absent'], datasets: [ { data: [present, absent] } ] },
+  });
+</script>
+{% endblock %}
+
+
