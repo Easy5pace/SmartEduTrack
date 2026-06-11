@@ -1,7 +1,7 @@
 # SmartEduTrack Documentation
 
 ## Overview
-SmartEduTrack is a Flask-based web application for managing educational data, including students, teachers, parents, and admins. It provides dashboards, analytics, and CRUD operations for all user types, with role-based access and PDF export features.
+SmartEduTrack is a Flask-based web application for managing educational data, including students, teachers, parents and admins. It provides dashboards, analytics, and CRUD operations for all user types, with role-based access and PDF export features.
 
 ## Features
 - User roles: Admin, Student, Teacher, Parent
