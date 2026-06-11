@@ -13,33 +13,67 @@ SmartEduTrack is a Flask-based web application for managing educational data, in
 - PDF export for student progress cards
 - Demo data seeding
 
+  
 ## Project Structure
-```
+
+```text
 SmartEduTrack/
-<!-- SmartEduTrack README -->
+│
+├── app/
+│   ├── static/
+│   │   ├── css/
+│   │   ├── js/
+│   │   └── images/
+│   │
+│   ├── templates/
+│   │   ├── dashboard_admin.html
+│   │   ├── dashboard_teacher.html
+│   │   ├── dashboard_student.html
+│   │   ├── dashboard_parent.html
+│   │   ├── login.html
+│   │   ├── register.html
+│   │   └── base.html
+│   │
+│   ├── __init__.py          # Flask app initialization
+│   ├── models.py            # Database models
+│   ├── forms.py             # WTForms definitions
+│   ├── routes.py            # Application routes
+│   └── utils.py             # Helper functions (PDF export, utilities)
+│
+├── instance/
+│   └── smartedutrack.db     # SQLite database
+│
+├── tests/
+│   ├── test_models.py
+│   ├── test_routes.py
+│   └── test_forms.py
+│
+├── .github/
+│   └── copilot-instructions.md
+│
+├── .gitignore
+├── config.py               # Application configuration
+├── requirements.txt        # Project dependencies
+├── run.py                  # Application entry point
+└── README.md               # Project documentation
+```
 
-# SmartEduTrack
+### Key Components
 
-Lightweight school management demo app built with Flask. Use it to manage students, teachers, parents and admins, track marks/attendance, assign work, view analytics and export student progress as PDFs.
+| File/Folder                 | Description                                                                                         |
+| --------------------------- | --------------------------------------------------------------------------------------------------- |
+| `run.py`                    | Starts the Flask application                                                                        |
+| `app/models.py`             | Contains database models for Users, Students, Teachers, Parents, Assignments, Marks, and Attendance |
+| `app/routes.py`             | Handles all application routes and dashboard logic                                                  |
+| `app/forms.py`              | WTForms used for authentication and CRUD operations                                                 |
+| `app/utils.py`              | Utility functions including PDF generation                                                          |
+| `app/templates/`            | Jinja2 HTML templates                                                                               |
+| `app/static/`               | CSS, JavaScript, and image assets                                                                   |
+| `instance/smartedutrack.db` | SQLite database file                                                                                |
+| `requirements.txt`          | Python package dependencies                                                                         |
+| `README.md`                 | Project documentation                                                                               |
 
-This README covers quick setup, architecture, developer workflow, and next steps for turning the demo into a production-ready app.
-
-## Quick links
-- App entry: `run.py`
-- App package: `app/`
-- Templates: `app/templates/`
-- Static: `app/static/`
-- Models: `app/models.py`
-- Routes: `app/routes.py`
-- Forms: `app/forms.py`
-- Requirements: `requirements.txt`
-
-## Quickstart (local)
-1. Create & activate a virtual environment (PowerShell):
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+```
 ```
 
 2. Install dependencies:
